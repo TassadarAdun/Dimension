@@ -1,0 +1,42 @@
+# Project: Dimension
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = dimension.o environment.o functions.o main_objects.o vec3f.o $(RES)
+LINKOBJ  = dimension.o environment.o functions.o main_objects.o vec3f.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" lib/libglfw.a lib/libglu32.a lib/libopengl32.a  -g3 
+INCS =  -I"C:/Dev-Cpp/include" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
+BIN  = dimension.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before dimension.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "dimension.exe" $(LIBS)
+
+dimension.o: dimension.cpp
+	$(CPP) -c dimension.cpp -o dimension.o $(CXXFLAGS)
+
+environment.o: environment.cpp
+	$(CPP) -c environment.cpp -o environment.o $(CXXFLAGS)
+
+functions.o: functions.cpp
+	$(CPP) -c functions.cpp -o functions.o $(CXXFLAGS)
+
+main_objects.o: main_objects.cpp
+	$(CPP) -c main_objects.cpp -o main_objects.o $(CXXFLAGS)
+
+vec3f.o: vec3f.cpp
+	$(CPP) -c vec3f.cpp -o vec3f.o $(CXXFLAGS)
