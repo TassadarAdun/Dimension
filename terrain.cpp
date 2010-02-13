@@ -16,25 +16,65 @@
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
+
+
 #include <iostream>
-//#include <GL/glfw.h>
 #include <math.h>
-
-//#include "vec3f.h"
+#include <fstream>
+#include <sstream>
 #include "functions.hpp"
-//#include "main_objects.h"
 #include "terrain.hpp"
-
 #include <stdio.h>
-
+ 
+using namespace std;
+ 
 terrain::terrain()
 {
-//loading heightmap
+  
+width=1024;
+height=1024;
+/*loading heightmap
 if(glfwReadImage("heightmap.tga", &heightmap, 0)!=GL_TRUE)
 {
   cout<<"Error reading heightmap!";
   end_game(1);
+}*/
+//
+ifstream textfile("height.dat");
+if(!textfile.is_open())
+{
+  cout<<"Error reading heightmap";
+  end_game(1);
 }
+else
+{
+  //float heightdata[height][width];
+  //string line;
+  for(int z=0;z<1024;z++)
+  {
+    getline(textfile,line);
+    if(line.empty())
+    {
+      break;
+    }
+    for(int x=0;x<1024;x++)
+    {        //cout<<line;
+      pos=line.find(' ');
+      if(pos==string::npos)
+      {
+        break;
+      }
+      string line2(line,0,pos);
+      stringstream strh(line2);
+      strh >> heightdata[z][x];
+      //printf("%d\n",heightdata[z][x]);
+      //cout<<"reach!";
+      line.erase(0,pos+1);
+    }
+  }
+  textfile.close();
+}
+
 glGenTextures(1,&tex);
 glBindTexture(GL_TEXTURE_2D, tex);
 //GL_MODULATE for correct lighting and shit
@@ -49,8 +89,7 @@ if(glfwLoadTexture2D("terrain1.tga", GLFW_BUILD_MIPMAPS_BIT)!=GL_TRUE)
   end_game(1);
 }
 
-width=1024;
-height=1024;
+
 //lod1=50;
 /*for(int i=0; i<240; i++)
 {
@@ -381,7 +420,7 @@ glDisable(GL_TEXTURE_2D);
 
 float terrain::getHeight(int x, int z)
 {
-  return heightmap.Data[z*1024+x]/2;
+  return heightdata[z][x];
 }
 
 float terrain::getHeightExact(float x, float z)
