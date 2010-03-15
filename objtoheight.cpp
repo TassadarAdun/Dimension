@@ -104,7 +104,7 @@ int main(int argc, char** argv)
     {
       for(int x=0; x<1025; x++)
       {
-        writefile<<values[y][x]<<' ';
+        writefile<<values[x][y]<<' ';
       }
       writefile<<'\n';
     }

@@ -61,6 +61,7 @@ class camera
   float lastx, lasty;
   camera();
   void mouselook();
+  float frustum(float ox, float oy);
 };
 
 

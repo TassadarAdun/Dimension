@@ -180,11 +180,14 @@ void terrain::draw()
 {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tex);
-    int nlod=2;
+    int nlod=4;
     int lod[nlod];
-    lod[2]=width/2;//only if width=height
-    lod[1]=100;//can be divided by 4
-    lod[0]=50;//can be divided by 2
+    lod[0]=50;
+    lod[nlod]=width/2;//only if width=height
+    for(int i=1; i<nlod; i++)
+    {
+      lod[i]=50*pow(2,i);
+    }
     int exp=2;
     Vec3f normal;
     int zp, xp, zp2, xp2, zt, zf, xt, xf;
@@ -231,7 +234,8 @@ for(int i=nlod; i>0; i--)
           for(int x = xf; x <= xt; x=x+fc) {
               normal = getNormal(x, z);
               glNormal3f(normal[0], normal[1], normal[2]);
-              glTexCoord2f((float)x/((float)lod[nlod]*2),(float)z/((float)lod[nlod]*2));
+              //glTexCoord2f((float)x/((float)lod[nlod]*2),(float)z/((float)lod[nlod]*2));
+              glTexCoord2f(x % lfc,0);
               //
               if(!(x % lfc==0) && (z==zf))
               {
@@ -250,7 +254,8 @@ for(int i=nlod; i>0; i--)
               glVertex3f(x, height, z);
               normal = getNormal(x, z+fc);
               glNormal3f(normal[0], normal[1], normal[2]);
-              glTexCoord2f((float)x/((float)lod[nlod]*2),((float)z+fc)/((float)lod[nlod]*2));
+              //glTexCoord2f((float)x/((float)lod[nlod]*2),((float)z+fc)/((float)lod[nlod]*2));
+              glTexCoord2f(x % lfc,fc);
               //
               if(!(x % lfc==0) && (z==zt-fc))
               {
@@ -280,7 +285,8 @@ for(int i=nlod; i>0; i--)
             for(int x = xf; x <= xp-lod[i-1]; x=x+fc) {
               normal = getNormal(x, z);
               glNormal3f(normal[0], normal[1], normal[2]);
-              glTexCoord2f((float)x/((float)lod[nlod]*2),(float)z/((float)lod[nlod]*2));
+              //glTexCoord2f((float)x/((float)lod[nlod]*2),(float)z/((float)lod[nlod]*2));
+              glTexCoord2f(x % lfc,0);
               //
               if(!(z % lfc==0) && (x==xf))
               {
@@ -294,7 +300,8 @@ for(int i=nlod; i>0; i--)
               glVertex3f(x, height, z);
               normal = getNormal(x, z+fc);
               glNormal3f(normal[0], normal[1], normal[2]);
-              glTexCoord2f((float)x/((float)lod[nlod]*2),((float)z+fc)/((float)lod[nlod]*2));
+              //glTexCoord2f((float)x/((float)lod[nlod]*2),((float)z+fc)/((float)lod[nlod]*2));
+              glTexCoord2f(x % lfc,fc);
               //
               if(!((z+fc) % lfc==0) && (x==xf))
               {
@@ -317,7 +324,8 @@ for(int i=nlod; i>0; i--)
             for(int x = xp+lod[i-1]; x <= xt; x=x+fc) {
               normal = getNormal(x, z);
               glNormal3f(normal[0], normal[1], normal[2]);
-              glTexCoord2f((float)x/((float)lod[nlod]*2),(float)z/((float)lod[nlod]*2));
+              //glTexCoord2f((float)x/((float)lod[nlod]*2),(float)z/((float)lod[nlod]*2));
+              glTexCoord2f(x % lfc,0);
               //
               if(!(z % lfc==0) && (x==xt))
               {
@@ -332,7 +340,8 @@ for(int i=nlod; i>0; i--)
               
               normal = getNormal(x, z+fc);
               glNormal3f(normal[0], normal[1], normal[2]);
-              glTexCoord2f((float)x/((float)lod[nlod]*2),((float)z+fc)/((float)lod[nlod]*2));
+              //glTexCoord2f((float)x/((float)lod[nlod]*2),((float)z+fc)/((float)lod[nlod]*2));
+              glTexCoord2f(x % lfc,fc);
               //
               if(!((z+fc) % lfc==0) && (x==xt))
               {

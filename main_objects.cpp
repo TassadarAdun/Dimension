@@ -18,12 +18,15 @@
 //      MA 02110-1301, USA.
 #include <iostream>
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
+#include <GL/glew.h>
 #include <GL/glfw.h>
 
 #include "functions.hpp"
 #include "terrain.hpp"
 #include "main_objects.hpp"
+#include "shaders.hpp"
 #include "tree.hpp"
 
 using namespace std;
@@ -31,6 +34,7 @@ using namespace std;
 game_object game;
 camera cam1;
 terrain * ter1;
+shader shader1;
 
 
 game_object::game_object()
@@ -56,6 +60,7 @@ void game_object::initialize()//initialize dimension
     cout<<"GLFW failed to start. This could be a bug, please contact the creator.";
     end_game(1);
   }
+
   //create new window
   if (glfwOpenWindow(width, height, 5, 6, 5, 0, 0, 0, GLFW_FULLSCREEN) != GL_TRUE)
   {
@@ -63,7 +68,13 @@ void game_object::initialize()//initialize dimension
     end_game(1);
   }
   glfwSetWindowTitle("Dimension");
-
+GLenum err = glewInit();
+if (GLEW_OK != err)
+{
+  /* Problem: glewInit failed, something is seriously wrong. */
+  fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+  }
+  shader1.init("vert.glsl","frag.glsl");
   //set camera
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -91,6 +102,7 @@ void game_object::draw()//draws everything
 {
   glLoadIdentity();
 
+  
   GLfloat ambientColor[] = {0.5, 0.5, 0.5, 1.0}; //ambient light
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
   GLfloat lightColor0[] = {0.9, 0.9, 0.9, 1.0};//positioned light
@@ -107,6 +119,7 @@ void game_object::draw()//draws everything
     //printf("%d\n",draw_list[i]);
     draw_list[i]->draw();
   }
+  
 }
 
 void game_object::main_loop()
@@ -221,4 +234,9 @@ float game_object::getHeight(int x, int z)
 float game_object::getHeightExact(float x, float z)
 {
   return ter1->getHeightExact(x, z);//ter1->heightmap.Data[z*256+x];
+}
+
+float camera::frustum(float ox, float oz)
+{
+  return abs(dir-atan2(x-ox,z-oz))>45;
 }

@@ -25,6 +25,7 @@
 #include "main_objects.hpp"
 #include "terrain.hpp"
 #include "tree.hpp"
+#include "shaders.hpp"
 
 using namespace std;
 
