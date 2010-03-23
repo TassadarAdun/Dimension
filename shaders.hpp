@@ -20,11 +20,13 @@
 #ifndef SHADERS
 #define SHADERS
 
+#include <GL/glfw.h>
 #include <string>
+
 
 using namespace std;
 
-string returnshader(string sFile);
+
 
 class shader
 {
@@ -33,7 +35,11 @@ public:
     shader(string vsFile, string fsFile);
     ~shader();
     
+    string returnshader(string fileName);
     void init(string vsFile, string fsFile);
+    
+    void check_compile(GLuint sha_ver, string file);
+    void check_program(GLuint program);
     
     void begin();
     void end();

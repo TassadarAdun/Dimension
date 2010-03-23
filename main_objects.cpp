@@ -57,14 +57,14 @@ void game_object::initialize()//initialize dimension
 {
   if (glfwInit() != GL_TRUE)//glfw started check
   {
-    cout<<"GLFW failed to start. This could be a bug, please contact the creator.";
+    cerr<<"GLFW failed to start. This could be a bug, please contact the creator."<<endl;
     end_game(1);
   }
 
   //create new window
   if (glfwOpenWindow(width, height, 5, 6, 5, 0, 0, 0, GLFW_FULLSCREEN) != GL_TRUE)
   {
-    cout<<"GLFW failed to open a window. This could be a bug, please contact the creator.";
+    cerr<<"GLFW failed to open a window. This could be a bug, please contact the creator."<<endl;
     end_game(1);
   }
   glfwSetWindowTitle("Dimension");
@@ -112,14 +112,14 @@ void game_object::draw()//draws everything
 
 
   //glColor3f(0.1, 0.9, 0.1);
-
+  shader1.begin();
   //draw everything in the draw list
   for(int i=0; i<location; i++)
   {
     //printf("%d\n",draw_list[i]);
     draw_list[i]->draw();
   }
-  
+  shader1.end();
 }
 
 void game_object::main_loop()

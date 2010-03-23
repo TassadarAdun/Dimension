@@ -43,7 +43,7 @@ if(glfwReadImage("heightmap.tga", &heightmap, 0)!=GL_TRUE)
 ifstream textfile("height.dat");
 if(!textfile.is_open())
 {
-  cout<<"Error reading heightmap";
+  cerr<<"Error reading heightmap"<<endl;
   end_game(1);
 }
 else
@@ -85,7 +85,7 @@ glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
 glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 if(glfwLoadTexture2D("terrain1.tga", GLFW_BUILD_MIPMAPS_BIT)!=GL_TRUE)
 {
-  cout<<"Error reading terrain texture!";
+  cerr<<"Error reading terrain texture!"<<endl;
   end_game(1);
 }
 
