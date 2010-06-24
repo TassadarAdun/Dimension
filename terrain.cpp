@@ -22,11 +22,16 @@
 #include <math.h>
 #include <fstream>
 #include <sstream>
+#include <GL/glew.h>
 #include "functions.hpp"
 #include "terrain.hpp"
 #include <stdio.h>
+#include "shaders.hpp"
+
  
 using namespace std;
+
+//shader shader1;
  
 terrain::terrain()
 {
@@ -77,8 +82,8 @@ else
 
 glGenTextures(1,&tex);
 glBindTexture(GL_TEXTURE_2D, tex);
-//GL_MODULATE for correct lighting and shit
-glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//GL_MODULATE for correct lighting and shit (not necessary because of shaders :))
+//glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 //when texture area is small, bilinear filter the closest mipmap
 glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 //when texture area is large, bilinear filter the original
@@ -178,7 +183,9 @@ delete[] normals2;
 
 void terrain::draw()
 {
-    glEnable(GL_TEXTURE_2D);
+    glActiveTexture(GL_TEXTURE0);
+    int texture_loc = glGetUniformLocation(shader1.id(), "texture");
+    glUniform1i(texture_loc,0);
     glBindTexture(GL_TEXTURE_2D, tex);
     int nlod=4;
     int lod[nlod];
@@ -424,7 +431,7 @@ for(int z = zf; z < zt; z++){
   
   glEnd();
 }
-glDisable(GL_TEXTURE_2D);
+//glDisable(GL_TEXTURE_2D);
 }
 
 float terrain::getHeight(int x, int z)

@@ -29,38 +29,28 @@
 #include <stdlib.h>
 using namespace std;
 
-string shader::returnshader(string fileName)
+string shader::returnshader(string filename)
 {
-  ifstream file(fileName.c_str());
+  
+  int count;
+  ifstream file(filename.c_str());
   if (!file.is_open())
   {
-    cerr<<"Could not open"<< fileName <<"for reading"<<endl;
+    cerr<<"Could not open"<< filename <<"for reading"<<endl;
     end_game(1);
   }
+  file.seekg(0, ios::end);
+  count = file.tellg();
+  file.seekg(0, ios::beg);
+  string output;
+  output.clear();
+  output.resize(size_t(count));
+  //memset(*output,0,count);
   stringstream ss;
   ss << file.rdbuf();
   file.close();
-  //cerr << ss.str() << endl;
-  return ss.str();
-  /*char* text;
-    
-	if (fileName != NULL) {
-        FILE *file = fopen(fileName, "rt");
-        
-		if (file != NULL) {
-            fseek(file, 0, SEEK_END);
-            int count = ftell(file);
-            rewind(file);
-            
-			if (count > 0) {
-				text = (char*)malloc(sizeof(char) * (count + 1));
-				count = fread(text, sizeof(char), count, file);
-				text[count] = '\0';
-			}
-			fclose(file);
-		}
-	}
-	return text;*/
+  output=ss.str();
+  return output;
 }
 
 void shader::check_compile(GLuint sha_ver, string sha_file = 0)

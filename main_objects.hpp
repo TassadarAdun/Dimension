@@ -62,6 +62,8 @@ class camera
   camera();
   void mouselook();
   float frustum(float ox, float oy);
+  private:
+  bool e_key, mode_edit;
 };
 
 

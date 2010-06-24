@@ -22,6 +22,7 @@
 //#include <math.h>
 //#include <GL/glfw.h>
 #include "functions.hpp"
+
 #include "main_objects.hpp"
 #include "terrain.hpp"
 #include "tree.hpp"

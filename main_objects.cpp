@@ -1,21 +1,21 @@
-//      main_object.cpp
-//      
-//      Copyright 2009 Klaas Winter <klaaswinter@gmail.com>
-//      
-//      This program is free software; you can redistribute it and/or modify
-//      it under the terms of the GNU General Public License as published by
-//      the Free Software Foundation; either version 2 of the License, or
-//      (at your option) any later version.
-//      
-//      This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY; without even the implied warranty of
-//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//      GNU General Public License for more details.
-//      
-//      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-//      MA 02110-1301, USA.
+// main_object.cpp
+//
+// Copyright 2009 Klaas Winter <klaaswinter@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+// MA 02110-1301, USA.
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -85,11 +85,11 @@ if (GLEW_OK != err)
   //initialize opengl stuff
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
-  glEnable(GL_COLOR_MATERIAL);
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-  glEnable(GL_NORMALIZE);
-  glShadeModel(GL_SMOOTH);
+  //glEnable(GL_COLOR_MATERIAL);
+  //glEnable(GL_LIGHTING);
+  //glEnable(GL_LIGHT0);
+  //glEnable(GL_NORMALIZE);
+  //glShadeModel(GL_SMOOTH);
 
   //create terrain
   ter1=new terrain;
@@ -103,7 +103,7 @@ void game_object::draw()//draws everything
   glLoadIdentity();
 
   
-  GLfloat ambientColor[] = {0.5, 0.5, 0.5, 1.0}; //ambient light
+  GLfloat ambientColor[] = {1.0, 1.0, 1.0, 1.0}; //ambient light
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
   GLfloat lightColor0[] = {0.9, 0.9, 0.9, 1.0};//positioned light
   GLfloat lightPos0[] = {1.0, 0.0, 0.0, 0.0};
@@ -124,15 +124,15 @@ void game_object::draw()//draws everything
 
 void game_object::main_loop()
 {
-  // the time of the previous frame
+  // start time
   double old_time = glfwGetTime();
 
 
-  // this just loops as long as the program runs
+  
   while(1)
   {
-    // calculate time elapsed, and the amount by which stuff rotates
-    double current_time = glfwGetTime();	
+    
+    double current_time = glfwGetTime();
 
     //calculate fps
     fps=1/(current_time-old_time);
@@ -140,29 +140,28 @@ void game_object::main_loop()
     if(fps>10)
     fpsfac=60/fps;
     //cout<<fps<<":";
-    //       delta_rotate = (current_time - old_time) * rotations_per_tick * 360;
+
     old_time = current_time;
     // escape to quit
     if (glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS)
       break;
 
-    //camera
-    //glMatrixMode(GL_PROJECTION);
-    cam1.mouselook();
-    //glMatrixMode(GL_MODELVIEW);
 
-    // clear the buffer
+    cam1.mouselook();
+
+
+  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // draw the figure
+    
     draw();
-    // swap back and front buffers
+    
     glfwSwapBuffers();
   }
 }
 
 
 camera::camera()
-  {
+{
   x=128;
   y=100;
   z=128;
@@ -173,26 +172,53 @@ camera::camera()
   ydir=0;
   lastx=400;
   lasty=300;
-  }
+  e_key=false;
+  mode_edit=false;
+}
 void camera::mouselook()
   {
     int xm, ym;
     glfwGetMousePos(&xm, &ym);
     if(!(xm==lastx && ym==lasty))
-    {
+    {      
+      if(mode_edit==false)
+      {
       float change_x;
       float change_y;
       change_x=(xm-lastx)/16;
       change_y=(ym-lasty)/16;
       lastx=xm;
       lasty=ym;
+
       dir-=change_x/60;
       ydir-=change_y/64;
+      }
       //glfwSetMousePos(400,300);
-      xt=game.fpsfac*sin(dir);
-      yt=game.fpsfac*ydir;
-      zt=game.fpsfac*cos(dir);
     }
+
+      
+      //edit mode, I first tried 1/64 instead of 0.001, but this didn't work
+    if(glfwGetKey(GLFW_KEY_UP)==GLFW_PRESS && mode_edit==true)//turn up
+    {
+      ydir+=0.005;
+      cerr<<ydir;
+    }
+    if(glfwGetKey(GLFW_KEY_DOWN)==GLFW_PRESS && mode_edit==true)//turn down
+    {
+      ydir-=0.005;
+    }
+    if(glfwGetKey(GLFW_KEY_LEFT)==GLFW_PRESS && mode_edit==true)//turn left
+    {
+      dir+=0.007;
+      cerr<<dir;
+    }
+    if(glfwGetKey(GLFW_KEY_RIGHT)==GLFW_PRESS && mode_edit==true)//turn right
+    {
+      dir-=0.007;
+    }
+   
+    
+    
     if(glfwGetKey('W')==GLFW_PRESS)//W
     {
       x=x+game.fpsfac*sin(dir);
@@ -217,7 +243,29 @@ void camera::mouselook()
       z=z+game.fpsfac*cos(dir-M_PI_2);
       y=game.getHeightExact(x,z)+1.6;
     }
-    //y=200;
+    //when released    
+    if(glfwGetKey('E')==GLFW_RELEASE)//E
+    {
+      if(e_key==true)
+      {
+        if(mode_edit==true)
+          {mode_edit=false;}
+        else
+          {mode_edit=true;}
+      }
+      e_key=false;
+      
+    }
+    else
+    {
+      e_key=true;
+      
+    }
+
+    
+  xt=game.fpsfac*sin(dir);
+  yt=game.fpsfac*ydir;
+  zt=game.fpsfac*cos(dir);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(45.0, game.width/game.height, 1.0, 1000.0);

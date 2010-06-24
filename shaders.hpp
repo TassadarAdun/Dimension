@@ -52,5 +52,6 @@ private:
     int shader_fp;
 };
 
+extern shader shader1;
 
 #endif
