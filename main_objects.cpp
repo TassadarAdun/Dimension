@@ -191,21 +191,20 @@ void camera::mouselook()
       lasty=ym;
 
       dir-=change_x/60;
-      ydir-=change_y/64;
+      ydir-=change_y/60;//64
       }
-      //glfwSetMousePos(400,300);
     }
 
       
-      //edit mode, I first tried 1/64 instead of 0.001, but this didn't work
+      //edit mode, I first tried 1/64 instead of 0.005, but this didn't work
     if(glfwGetKey(GLFW_KEY_UP)==GLFW_PRESS && mode_edit==true)//turn up
     {
-      ydir+=0.005;
+      ydir+=0.007;
       cerr<<ydir;
     }
     if(glfwGetKey(GLFW_KEY_DOWN)==GLFW_PRESS && mode_edit==true)//turn down
     {
-      ydir-=0.005;
+      ydir-=0.007;
     }
     if(glfwGetKey(GLFW_KEY_LEFT)==GLFW_PRESS && mode_edit==true)//turn left
     {
@@ -249,9 +248,15 @@ void camera::mouselook()
       if(e_key==true)
       {
         if(mode_edit==true)
-          {mode_edit=false;}
+        {
+          mode_edit=false;
+          glfwDisable(GLFW_MOUSE_CURSOR);
+        }
         else
-          {mode_edit=true;}
+        {
+          mode_edit=true;
+          glfwEnable(GLFW_MOUSE_CURSOR);
+        }
       }
       e_key=false;
       
@@ -261,11 +266,16 @@ void camera::mouselook()
       e_key=true;
       
     }
+  float max_angle=M_PI_2-0.1;
+  if(ydir>max_angle)
+  {ydir=max_angle;}
+  if(ydir<-max_angle)
+  {ydir=-max_angle;}
 
-    
-  xt=game.fpsfac*sin(dir);
-  yt=game.fpsfac*ydir;
-  zt=game.fpsfac*cos(dir);
+  xt=game.fpsfac*sin(dir)*cos(ydir);
+  yt=game.fpsfac*sin(ydir);
+  zt=game.fpsfac*cos(dir)*cos(ydir);
+  
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(45.0, game.width/game.height, 1.0, 1000.0);
