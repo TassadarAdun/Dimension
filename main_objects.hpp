@@ -60,6 +60,7 @@ class camera
   float ydir;
   float lastx, lasty;
   bool mode_edit;
+  float cx, cy, cz;
   camera();
   void mouselook();
   void editmode();

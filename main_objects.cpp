@@ -113,6 +113,29 @@ void game_object::draw()//draws everything
 
   //glColor3f(0.1, 0.9, 0.1);
   shader1.begin();
+  
+  if(cam1.mode_edit==true)
+  {
+    //draw a pointer
+    glBegin(GL_TRIANGLE_STRIP);
+    //glNormal3f(0,-1,0);
+    glVertex3f(cam1.cx,cam1.cy,cam1.cz);
+    
+    //glNormal3f(,,);
+    glVertex3f(cam1.cx-0.1,cam1.cy+0.5,cam1.cz+0.1);
+    //glNormal3f(,,);
+    glVertex3f(cam1.cx,cam1.cy+0.5,cam1.cz-0.141421);
+   // glNormal3f(,,);
+    glVertex3f(cam1.cx+0.1,cam1.cy+0.5,cam1.cz+0.1);
+    glVertex3f(cam1.cx,cam1.cy,cam1.cz);
+    
+    glEnd();
+    glBegin(GL_TRIANGLES);
+    glVertex3f(cam1.cx,cam1.cy,cam1.cz);
+    glVertex3f(cam1.cx+0.1,cam1.cy+0.5,cam1.cz+0.1);
+    glVertex3f(cam1.cx-0.1,cam1.cy+0.5,cam1.cz+0.1);
+    glEnd();
+  }
   //draw everything in the draw list
   for(int i=0; i<location; i++)
   {
@@ -175,6 +198,9 @@ camera::camera()
   lasty=300;
   fov_y=45.0;
   cam_height=1.6;
+  cx=0;
+  cy=0;
+  cz=0;
   //factor_screen is the distance from the camera to the mouse
   factor_screen=game.height/(tan(rad(fov_y/2))*2);
   fov_x=(float(game.width)/float(game.height))*fov_y;
@@ -301,7 +327,7 @@ void camera::editmode()
   int xm, ym;
   float dirm, ydirm, dirt, step, nx, ny, nz, d, lab, mx, my, mz;
   glfwGetMousePos(&xm, &ym);
-  dirm=dir+atan( (xm-(game.width/2))/factor_screen );
+  dirm=dir-atan( (xm-(game.width/2))/factor_screen );
   ydirm=ydir-atan( (ym-(game.height/2))/factor_screen );
   dirt=deg(dirm);
   dirt=dirt-(360*( (dirt/(360))-( fmod(dirt,360)/(360) ) ));//makes dirt somewhere between -2pi and 2pi
@@ -316,7 +342,7 @@ void camera::editmode()
   float sin_ydirm=sin(ydirm);
   float tan_ydirm=tan(ydirm);
   //printf(":%f\n",tan_ydirm);
-  float xd, yd, zd, cx, cy, cz;
+  float xd, yd, zd;
   int cx1, cz1, cx2, cz2;      
   xd=x+sin_dirm*cos_ydirm;
   yd=y+cam_height+sin_ydirm;
@@ -360,7 +386,7 @@ void camera::editmode()
       
     }
   }
-  printf(":%f\n%f\n%f\n%d\n%d\n ",cx,cy,cz,xm,ym);
+  //printf(":%f\n%f\n%f\n%d\n%d\n ",cx,cy,cz,xm,ym);
 }
 
 //game dependant functions
