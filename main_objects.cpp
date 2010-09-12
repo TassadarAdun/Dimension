@@ -139,7 +139,7 @@ void game_object::main_loop()
 
     if(fps>10)
     fpsfac=60/fps;
-    //cout<<fps<<":";
+    //cerr<<fps<<":";
 
     old_time = current_time;
     // escape to quit
@@ -175,7 +175,8 @@ camera::camera()
   lasty=300;
   fov_y=45.0;
   cam_height=1.6;
-  factor_screen=game.height/(tan((fov_y*M_PI)/360)*2);
+  //factor_screen is the distance from the camera to the mouse
+  factor_screen=game.height/(tan(rad(fov_y/2))*2);
   fov_x=(float(game.width)/float(game.height))*fov_y;
   e_key=false;
   mode_edit=false;
@@ -201,7 +202,7 @@ void camera::mouselook()
     }
 
       
-      //edit mode, I first tried 1/64 instead of 0.005, but this didn't work
+      //edit mode
     if(glfwGetKey(GLFW_KEY_UP)==GLFW_PRESS && mode_edit==true)//turn up
     {
       ydir+=0.007;
@@ -300,59 +301,66 @@ void camera::editmode()
   int xm, ym;
   float dirm, ydirm, dirt, step, nx, ny, nz, d, lab, mx, my, mz;
   glfwGetMousePos(&xm, &ym);
-  dirm=atan( (xm-(game.width/2))/factor_screen );
-  ydirm=atan( (ym-(game.height/2))/factor_screen );
+  dirm=dir+atan( (xm-(game.width/2))/factor_screen );
+  ydirm=ydir-atan( (ym-(game.height/2))/factor_screen );
   dirt=deg(dirm);
   dirt=dirt-(360*( (dirt/(360))-( fmod(dirt,360)/(360) ) ));//makes dirt somewhere between -2pi and 2pi
   dirt=dirt-(90*( (dirt/(90))-( fmod(dirt,90)/(90) ) ));//makes dirt somewhere between -pi_2 and pi_2
   dirt=dirt-(90*( (dirt/(45))-( fmod(dirt,45)/(45) ) ));//makes dirt somewhere between -pi_4 and pi_4
   step=1/cos(rad(dirt));
+  
   float cos_dirm=cos(dirm);
   float sin_dirm=sin(dirm);
   //float atan_dirtm=atan(y-floor(y)/x-floor(x));
   float cos_ydirm=cos(ydirm);
   float sin_ydirm=sin(ydirm);
   float tan_ydirm=tan(ydirm);
+  //printf(":%f\n",tan_ydirm);
+  float xd, yd, zd, cx, cy, cz;
+  int cx1, cz1, cx2, cz2;      
+  xd=x+sin_dirm*cos_ydirm;
+  yd=y+cam_height+sin_ydirm;
+  zd=z+cos_dirm*cos_ydirm;
   for(int i=1;i<=50;i++)
   {
-    if(game.getHeightExact(x+i*step*sin_dirm,z+i*step*cos_dirm)<cam_height- ((i*step)/tan_ydirm) );
+    //check if height at far end is smaller than the height of the line
+    if(game.getHeightExact(x+i*step*sin_dirm, z+i*step*cos_dirm)<cam_height+ ((i*step)*tan_ydirm) );
     {
-      int cx1, cz1, cx2, cz2;
       cx1=floor(x+(i-1)*step*sin_dirm);
-      cz1=floor(z+(i-1)*step*sin_dirm);
+      cz1=floor(z+(i-1)*step*cos_dirm);
       cx2=floor(x+i*step*sin_dirm);
-      cz2=floor(z+i*step*sin_dirm);
-      float xd, yd, zd, cx, cy, cz;
-      xd=x+sin_dirm*cos_ydirm;
-      yd=y+sin_ydirm;
-      zd=z+cos_dirm*cos_ydirm;
+      cz2=floor(z+i*step*cos_dirm);
+      
+
       //check first square
-      if(col_line_triangle(cx1, cx1, cx1+1, game.getHeight(cx1, cz1), game.getHeight(cx1, cz1+1), game.getHeight(cx1+1, cz1), cz1, cz1+1, cz1, x, y, z, xd, yd, zd, &cx, &cy, &cz)==1)
+      if(col_line_triangle(cx1, cx1, cx1+1, game.getHeight(cx1, cz1), game.getHeight(cx1, cz1+1), game.getHeight(cx1+1, cz1), cz1, cz1+1, cz1, x, y+cam_height, z, xd, yd, zd, &cx, &cy, &cz)==1)
       {break;}
-      if(col_line_triangle(cx1+1, cx1, cx1+1, game.getHeight(cx1+1, cz1+1), game.getHeight(cx1, cz1+1), game.getHeight(cx1+1, cz1), cz1+1, cz1+1, cz1, x, y, z, xd, yd, zd, &cx, &cy, &cz)==1)
+      if(col_line_triangle(cx1+1, cx1, cx1+1, game.getHeight(cx1+1, cz1+1), game.getHeight(cx1, cz1+1), game.getHeight(cx1+1, cz1), cz1+1, cz1+1, cz1, x, y+cam_height, z, xd, yd, zd, &cx, &cy, &cz)==1)
       {break;}
       //check second square
-      if(col_line_triangle(cx2, cx2, cx2+1, game.getHeight(cx2, cz2), game.getHeight(cx2, cz2+1), game.getHeight(cx2+1, cz2), cz2, cz2+1, cz2, x, y, z, xd, yd, zd, &cx, &cy, &cz)==1)
+      if(col_line_triangle(cx2, cx2, cx2+1, game.getHeight(cx2, cz2), game.getHeight(cx2, cz2+1), game.getHeight(cx2+1, cz2), cz2, cz2+1, cz2, x, y+cam_height, z, xd, yd, zd, &cx, &cy, &cz)==1)
       {break;}
-      if(col_line_triangle(cx2+1, cx2, cx2+1, game.getHeight(cx2+1, cz2+1), game.getHeight(cx2, cz2+1), game.getHeight(cx2+1, cz2), cz2+1, cz2+1, cz2, x, y, z, xd, yd, zd, &cx, &cy, &cz)==1)
+      if(col_line_triangle(cx2+1, cx2, cx2+1, game.getHeight(cx2+1, cz2+1), game.getHeight(cx2, cz2+1), game.getHeight(cx2+1, cz2), cz2+1, cz2+1, cz2, x, y+cam_height, z, xd, yd, zd, &cx, &cy, &cz)==1)
       {break;}
       if(abs(cx1-cx2)==1)
       {      
-        if(col_line_triangle(cx2, cx2, cx2+1, game.getHeight(cx2, cz1), game.getHeight(cx2, cz1+1), game.getHeight(cx2+1, cz1), cz1, cz1+1, cz1, x, y, z, xd, yd, zd, &cx, &cy, &cz)==1)
+        if(col_line_triangle(cx2, cx2, cx2+1, game.getHeight(cx2, cz1), game.getHeight(cx2, cz1+1), game.getHeight(cx2+1, cz1), cz1, cz1+1, cz1, x, y+cam_height, z, xd, yd, zd, &cx, &cy, &cz)==1)
         {break;}
-        if(col_line_triangle(cx2+1, cx2, cx2+1, game.getHeight(cx2+1, cz1+1), game.getHeight(cx2, cz1+1), game.getHeight(cx2+1, cz1), cz1+1, cz1+1, cz1, x, y, z, xd, yd, zd, &cx, &cy, &cz)==1)
+        if(col_line_triangle(cx2+1, cx2, cx2+1, game.getHeight(cx2+1, cz1+1), game.getHeight(cx2, cz1+1), game.getHeight(cx2+1, cz1), cz1+1, cz1+1, cz1, x, y+cam_height, z, xd, yd, zd, &cx, &cy, &cz)==1)
         {break;}
       }
       else
       if(abs(cz1-cz2)==1)
       {
-        if(col_line_triangle(cx1, cx1, cx1+1, game.getHeight(cx1, cz2), game.getHeight(cx1, cz2+1), game.getHeight(cx1+1, cz2), cz2, cz2+1, cz2, x, y, z, xd, yd, zd, &cx, &cy, &cz)==1)
+        if(col_line_triangle(cx1, cx1, cx1+1, game.getHeight(cx1, cz2), game.getHeight(cx1, cz2+1), game.getHeight(cx1+1, cz2), cz2, cz2+1, cz2, x, y+cam_height, z, xd, yd, zd, &cx, &cy, &cz)==1)
         {break;}
-        if(col_line_triangle(cx1+1, cx1, cx1+1, game.getHeight(cx1+1, cz2+1), game.getHeight(cx1, cz2+1), game.getHeight(cx1+1, cz2), cz2+1, cz2+1, cz2, x, y, z, xd, yd, zd, &cx, &cy, &cz)==1)
+        if(col_line_triangle(cx1+1, cx1, cx1+1, game.getHeight(cx1+1, cz2+1), game.getHeight(cx1, cz2+1), game.getHeight(cx1+1, cz2), cz2+1, cz2+1, cz2, x, y+cam_height, z, xd, yd, zd, &cx, &cy, &cz)==1)
         {break;}
       }
+      
     }
   }
+  printf(":%f\n%f\n%f\n%d\n%d\n ",cx,cy,cz,xm,ym);
 }
 
 //game dependant functions
