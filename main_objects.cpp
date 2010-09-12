@@ -34,7 +34,7 @@ using namespace std;
 game_object game;
 camera cam1;
 terrain * ter1;
-shader shader1;
+Shader shader1;
 
 
 game_object::game_object()
@@ -57,7 +57,7 @@ void game_object::initialize()//initialize dimension
 {
   if (glfwInit() != GL_TRUE)//glfw started check
   {
-    cerr<<"GLFW failed to start. This could be a bug, please contact the creator."<<endl;
+    printf("GLFW failed to start. This could be a bug, please contact the creator.\n");
     end_game(1);
   }
 
@@ -68,6 +68,7 @@ void game_object::initialize()//initialize dimension
     end_game(1);
   }
   glfwSetWindowTitle("Dimension");
+  
 GLenum err = glewInit();
 if (GLEW_OK != err)
 {

@@ -26,32 +26,25 @@
 
 using namespace std;
 
-
-
-class shader
-{
+class Shader {
 public:
-    shader();
-    shader(string vsFile, string fsFile);
-    ~shader();
+    Shader();
+    Shader(const char *vsFile, const char *fsFile);
+    ~Shader();
     
-    string returnshader(string fileName);
-    void init(string vsFile, string fsFile);
-    
-    void check_compile(GLuint sha_ver, string file);
-    void check_program(GLuint program);
+    void init(const char *vsFile, const char *fsFile);
     
     void begin();
     void end();
     
-    int id();
+    unsigned int id();
     
 private:
-    int shader_id;
-    int shader_vp;
-    int shader_fp;
+    unsigned int shader_id;
+    unsigned int shader_vp;
+    unsigned int shader_fp;
 };
 
-extern shader shader1;
+extern Shader shader1;
 
 #endif
