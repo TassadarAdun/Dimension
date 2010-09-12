@@ -21,30 +21,37 @@
 #define SHADERS
 
 #include <GL/glfw.h>
-#include <string>
+//#include <string>
 
 
 using namespace std;
 
-class Shader {
+
+
+class shader
+{
 public:
-    Shader();
-    Shader(const char *vsFile, const char *fsFile);
-    ~Shader();
+    shader();
+    shader(const char* vsFile, const char* fsFile);
+    ~shader();
     
-    void init(const char *vsFile, const char *fsFile);
+    const char* returnshader(const char* fileName);
+    void init(const char* vsFile, const char* fsFile);
+    
+    void check_compile(GLuint sha_ver, const char* file);
+    void check_program(GLuint program);
     
     void begin();
     void end();
     
-    unsigned int id();
+    int id();
     
 private:
-    unsigned int shader_id;
-    unsigned int shader_vp;
-    unsigned int shader_fp;
+    int shader_id;
+    int shader_vp;
+    int shader_fp;
 };
 
-extern Shader shader1;
+extern shader shader1;
 
 #endif

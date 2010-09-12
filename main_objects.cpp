@@ -34,7 +34,7 @@ using namespace std;
 game_object game;
 camera cam1;
 terrain * ter1;
-Shader shader1;
+shader shader1;
 
 
 game_object::game_object()
